@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista del Súper Familiar</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f7f9fc; color: #333; }
+        .container { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
+        .sync-status { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 20px; }
+        .form-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        button { padding: 10px 15px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .btn-add { background-color: #2ecc71; color: white; }
+        .btn-add:hover { background-color: #27ae60; }
+        .btn-reset { background-color: #e74c3c; color: white; width: 100%; margin-top: 20px; font-size: 16px; padding: 12px; }
+        .btn-reset:hover { background-color: #c0392b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background-color: #f8f9fa; color: #555; }
+        tr.comprado { background-color: #f1f2f6; text-decoration: line-through; color: #a4b0be; }
+        .checkbox-cell, .action-cell { text-align: center; width: 50px; }
+        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+        .btn-delete { background: none; border: none; color: #e74c3c; font-size: 16px; cursor: pointer; padding: 5px; }
+        .btn-delete:hover { color: #c0392b; transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>?? Lista del Súper Compartida</h2>
+    <div class="sync-status" id="status">Conectando a la nube...</div>
+    
+    <div class="form-group">
+        <input type="text" id="producto" placeholder="¿Qué falta? (ej: Leche)" required>
+        <input type="text" id="tienda" placeholder="¿En qué tienda? (ej: Walmart)">
+        <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
+        <button class="btn-add" onclick="agregarArticulo()">Añadir</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="checkbox-cell">?</th>
+                <th>Producto</th>
+                <th>Tienda</th>
+                <th>Cantidad</th>
+                <th class="action-cell">Quitar</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+    </table>
+
+    <button class="btn-reset" onclick="resetearLista()">Reiniciar Lista (Borrar Todo)</button>
+</div>
+
+<script>
+    // Tu ID de almacenamiento público en la nube (Puedes usar este de prueba)
+    const BIN_ID = "65076cf912a5d376597f8c05"; 
+    const API_URL = `https://jsonbin.io`;
+    const MASTER_KEY = "\$2a\$10\$vNiaC7m/NskqG4r.Hof9eOszFmR.zYx9ZlH38aV06x8g6e4Y7Zz5G"; // Llave pública de envío
+
+    let listaSuper = [];
+
+    async function cargarListaDeNube() {
+        document.getElementById('status').innerText = "?? Sincronizando con la nube...";
+        try {
+            const res = await fetch(API_URL, {
+                method: 'GET',
+                headers: { 'X-Master-Key': MASTER_KEY }
+            });
+            const data = await res.json();
+            listaSuper = data.record.lista || [];
+            renderizarTabla();
+            document.getElementById('status').innerText = "? Lista actualizada (Nube)";
+        } catch (err) {
+            document.getElementById('status').innerText = "? Error al conectar con internet";
+            console.error(err);
+        }
+    }
+
+    async function guardarEnNube() {
+        document.getElementById('status').innerText = "?? Guardando en la nube...";
+        try {
+            await fetch(API_URL, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': MASTER_KEY
+                },
+                body: JSON.stringify({ lista: listaSuper })
+            });
+            document.getElementById('status').innerText = "? Cambios guardados para toda la familia";
+        } catch (err) {
+            document.getElementById('status').innerText = "? Error al guardar";
+        }
+    }
+
+    function renderizarTabla() {
+        const tabla = document.getElementById('cuerpoTabla');
+        tabla.innerHTML = '';
+        listaSuper.forEach((articulo, index) => {
+            const fila = document.createElement('tr');
+            if (articulo.comprado) fila.classList.add('comprado');
+            fila.innerHTML = `
+                <td class="checkbox-cell">
+                    <input type="checkbox" ${articulo.comprado ? 'checked' : ''} onclick="alternarComprado(${index})">
+                </td>
+                <td>${articulo.producto}</td>
+                <td>${articulo.tienda || '-'}</td>
+                <td>${articulo.cantidad}</td>
+                <td class="action-cell">
+                    <button class="btn-delete" onclick="eliminarArticulo(${index})">?</button>
+                </td>
+            `;
+            tabla.appendChild(fila);
+        });
+    }
+
+    function agregarArticulo() {
+        const prodInput = document.getElementById('producto');
+        const tiendaInput = document.getElementById('tienda');
+        const cantInput = document.getElementById('cantidad');
+
+        if (prodInput.value.trim() === '') return;
+
+        listaSuper.push({
+            producto: prodInput.value.trim(),
+            tienda: tiendaInput.value.trim(),
+            cantidad: parseInt(cantInput.value) || 1,
+            comprado: false
+        });
+
+        renderizarTabla();
+        guardarEnNube();
+
+        prodInput.value = '';
+        tiendaInput.value = '';
+        cantInput.value = '1';
+        prodInput.focus();
+    }
+
+    function alternarComprado(index) {
+        listaSuper[index].comprado = !listaSuper[index].comprado;
+        renderizarTabla();
+        guardarEnNube();
+    }
+
+    function eliminarArticulo(index) {
+        listaSuper.splice(index, 1);
+        renderizarTabla();
+        guardarEnNube();
+    }
+
+    function resetearLista() {
+        if (confirm('¿Borrar la lista de todos los celulares familiares?')) {
+            listaSuper = [];
+            renderizarTabla();
+            guardarEnNube();
+        }
+    }
+
+    // Cargar los datos inmediatamente al abrir la página
+    cargarListaDeNube();
+</script>
+</body>
+</html>
