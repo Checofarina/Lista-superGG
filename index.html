@@ -56,18 +56,16 @@
 </div>
 
 <script>
-    const API_URL = "https://jsonbin.io";
-    
+    // Nueva ruta abierta sin restricciones de seguridad ni bloqueos de dominio
+    const API_URL = "https://kvbin.com";
+
     let listaSuper = [];
 
     async function cargarListaDeNube() {
         document.getElementById('status').style.color = "#7f8c8d";
         document.getElementById('status').innerText = "Sincronizando con la nube...";
         try {
-            const res = await fetch(API_URL + '/latest', {
-                method: 'GET',
-                headers: { 'X-Bin-Meta': 'false' }
-            });
+            const res = await fetch(API_URL);
             if (!res.ok) throw new Error();
             const data = await res.json();
             listaSuper = data.lista || [];
@@ -76,7 +74,7 @@
             document.getElementById('status').innerText = "Lista en linea sincronizada";
         } catch (err) {
             document.getElementById('status').style.color = "#e74c3c";
-            document.getElementById('status').innerText = "Modo local. Los cambios se guardaran solo aqui.";
+            document.getElementById('status').innerText = "Modo de respaldo. Reintenta recargar la pagina.";
             listaSuper = JSON.parse(localStorage.getItem('listaSuperFallback')) || [];
             renderizarTabla();
         }
@@ -88,18 +86,16 @@
         document.getElementById('status').innerText = "Guardando cambios en la nube...";
         try {
             const res = await fetch(API_URL, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ lista: listaSuper })
             });
             if (!res.ok) throw new Error();
             document.getElementById('status').style.color = "#2ecc71";
             document.getElementById('status').innerText = "Cambios guardados para toda la familia";
         } catch (err) {
-            document.getElementById('status').style.color = "#7f8c8d";
-            document.getElementById('status').innerText = "Guardado en este celular (Actualizando nube...)";
+            document.getElementById('status').style.color = "#2ecc71";
+            document.getElementById('status').innerText = "Cambios guardados de forma local";
         }
     }
 
