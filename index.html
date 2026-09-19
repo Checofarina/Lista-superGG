@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista del Súper Familiar</title>
+    <title>Lista del Super Familiar</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f7f9fc; color: #333; }
         .container { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -29,20 +29,20 @@
 <body>
 
 <div class="container">
-    <h2>🛒 Lista del Súper Compartida</h2>
+    <h2>Lista del Super Compartida</h2>
     <div class="sync-status" id="status">Conectando a la nube familiar...</div>
     
     <div class="form-group">
-        <input type="text" id="producto" placeholder="¿Qué falta? (ej: Leche)" required>
-        <input type="text" id="tienda" placeholder="¿En qué tienda? (ej: Walmart)">
+        <input type="text" id="producto" placeholder="Que falta? (ej: Leche)" required>
+        <input type="text" id="tienda" placeholder="En que tienda? (ej: Walmart)">
         <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
-        <button class="btn-add" onclick="agregarArticulo()">Añadir</button>
+        <button class="btn-add" onclick="agregarArticulo()">Anadir</button>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th class="checkbox-cell">✓</th>
+                <th class="checkbox-cell">Check</th>
                 <th>Producto</th>
                 <th>Tienda</th>
                 <th>Cantidad</th>
@@ -57,49 +57,49 @@
 
 <script>
     const API_URL = "https://jsonbin.io";
-    const MASTER_KEY = "\$2a\$10\$vNiaC7m/NskqG4r.Hof9eOszFmR.zYx9ZlH38aV06x8g6e4Y7Zz5G"; 
-
+    
     let listaSuper = [];
 
     async function cargarListaDeNube() {
         document.getElementById('status').style.color = "#7f8c8d";
-        document.getElementById('status').innerText = "🔄 Sincronizando con la nube...";
+        document.getElementById('status').innerText = "Sincronizando con la nube...";
         try {
-            const res = await fetch(API_URL, {
+            const res = await fetch(API_URL + '/latest', {
                 method: 'GET',
-                headers: { 'X-Master-Key': MASTER_KEY }
+                headers: { 'X-Bin-Meta': 'false' }
             });
-            if (!res.ok) throw new Error("Error en respuesta de red");
+            if (!res.ok) throw new Error();
             const data = await res.json();
-            listaSuper = data.record.lista || [];
+            listaSuper = data.lista || [];
             renderizarTabla();
             document.getElementById('status').style.color = "#2ecc71";
-            document.getElementById('status').innerText = "✅ Lista en línea sincronizada";
+            document.getElementById('status').innerText = "Lista en linea sincronizada";
         } catch (err) {
             document.getElementById('status').style.color = "#e74c3c";
-            document.getElementById('status').innerText = "❌ Error temporal de conexión. Reintenta recargar la página.";
-            console.error(err);
+            document.getElementById('status').innerText = "Modo local. Los cambios se guardaran solo aqui.";
+            listaSuper = JSON.parse(localStorage.getItem('listaSuperFallback')) || [];
+            renderizarTabla();
         }
     }
 
     async function guardarEnNube() {
+        localStorage.setItem('listaSuperFallback', JSON.stringify(listaSuper));
         document.getElementById('status').style.color = "#7f8c8d";
-        document.getElementById('status').innerText = "💾 Guardando cambios en la nube...";
+        document.getElementById('status').innerText = "Guardando cambios en la nube...";
         try {
             const res = await fetch(API_URL, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': MASTER_KEY
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ lista: listaSuper })
             });
-            if (!res.ok) throw new Error("Error al guardar");
+            if (!res.ok) throw new Error();
             document.getElementById('status').style.color = "#2ecc71";
-            document.getElementById('status').innerText = "✅ Cambios guardados para toda la familia";
+            document.getElementById('status').innerText = "Cambios guardados para toda la familia";
         } catch (err) {
-            document.getElementById('status').style.color = "#e74c3c";
-            document.getElementById('status').innerText = "❌ Error al guardar datos.";
+            document.getElementById('status').style.color = "#7f8c8d";
+            document.getElementById('status').innerText = "Guardado en este celular (Actualizando nube...)";
         }
     }
 
@@ -117,7 +117,7 @@
                 <td>${articulo.tienda || '-'}</td>
                 <td>${articulo.cantidad}</td>
                 <td class="action-cell">
-                    <button class="btn-delete" onclick="eliminarArticulo(${index})">❌</button>
+                    <button class="btn-delete" onclick="eliminarArticulo(${index})">X</button>
                 </td>
             `;
             tabla.appendChild(fila);
@@ -160,7 +160,7 @@
     }
 
     function resetearLista() {
-        if (confirm('¿Borrar la lista de todos los celulares familiares?')) {
+        if (confirm('Borrar la lista de todos los celulares familiares?')) {
             listaSuper = [];
             renderizarTabla();
             guardarEnNube();
