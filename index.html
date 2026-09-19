@@ -3,100 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista del Super Familiar</title>
+    <title>Lista del Super</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f7f9fc; color: #333; }
-        .container { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
-        .sync-status { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 20px; font-weight: bold; }
-        .form-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-        button { padding: 10px 15px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-        .btn-add { background-color: #2ecc71; color: white; }
-        .btn-add:hover { background-color: #27ae60; }
-        .btn-reset { background-color: #e74c3c; color: white; width: 100%; margin-top: 20px; font-size: 16px; padding: 12px; }
-        .btn-reset:hover { background-color: #c0392b; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        th { background-color: #f8f9fa; color: #555; }
-        tr.comprado { background-color: #f1f2f6; text-decoration: line-through; color: #a4b0be; }
-        .checkbox-cell, .action-cell { text-align: center; width: 50px; }
-        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
-        .btn-delete { background: none; border: none; color: #e74c3c; font-size: 16px; cursor: pointer; padding: 5px; }
-        .btn-delete:hover { color: #c0392b; transform: scale(1.1); }
+        /* Estilos Minimalistas Dark Mode */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background-color: #121212; 
+            color: #e0e0e0; 
+            display: flex;
+            justify-content: center;
+        }
+        .container { 
+            width: 100%;
+            max-width: 500px; 
+            background: #1e1e1e; 
+            padding: 30px; 
+            border-radius: 16px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4); 
+        }
+        h2 { 
+            text-align: center; 
+            color: #ffffff; 
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Formulario Estilizado */
+        .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            margin-bottom: 25px; 
+        }
+        input { 
+            padding: 14px; 
+            background-color: #2a2a2a;
+            border: 1px solid #3d3d3d; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #00adb5;
+        }
+        input::placeholder {
+            color: #757575;
+        }
+        
+        /* Botones Modernos */
+        button { 
+            padding: 14px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.2s; 
+        }
+        .btn-add { 
+            background-color: #00adb5; 
+            color: #ffffff; 
+        }
+        .btn-add:hover { 
+            background-color: #008c95; 
+        }
+        .btn-reset { 
+            background-color: transparent; 
+            color: #ff4444; 
+            width: 100%; 
+            margin-top: 25px; 
+            border: 1px solid #ff4444;
+        }
+        .btn-reset:hover { 
+            background-color: rgba(255, 68, 68, 0.1); 
+        }
+        
+        /* Lista/Tabla Limpia */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            font-size: 15px; 
+        }
+        td { 
+            padding: 16px 8px; 
+            text-align: left; 
+            border-bottom: 1px solid #2d2d2d; 
+        }
+        tr.comprado td { 
+            text-decoration: line-through; 
+            color: #666666; 
+        }
+        .checkbox-cell, .action-cell { 
+            text-align: center; 
+            width: 45px; 
+        }
+        
+        /* Checkbox Personalizado Minimalista */
+        input[type="checkbox"] { 
+            accent-color: #00adb5;
+            transform: scale(1.2); 
+            cursor: pointer; 
+        }
+        
+        /* Boton Eliminar Discreto */
+        .btn-delete { 
+            background: none; 
+            border: none; 
+            color: #757575; 
+            font-size: 14px; 
+            cursor: pointer; 
+            padding: 4px; 
+        }
+        .btn-delete:hover { 
+            color: #ff4444; 
+        }
+        
+        /* Modulo de Compartir */
+        .share-box { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #252d3a; 
+            border: 1px solid #3b485c;
+            border-radius: 10px; 
+            text-align: center; 
+            display: none; 
+        }
+        .share-text {
+            display: block;
+            font-size: 13px; 
+            color: #90caf9; 
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .btn-share { 
+            background-color: #2196f3; 
+            color: white; 
+            width: 100%; 
+            font-size: 14px; 
+            padding: 12px; 
+        }
+        .btn-share:hover { 
+            background-color: #1e88e5; 
+        }
+        
+        /* Etiquetas secundarias */
+        .sub-info {
+            font-size: 12px;
+            color: #757575;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Lista del Super Compartida</h2>
-    <div class="sync-status" id="status">Conectando a la nube familiar...</div>
+    <h2>Lista del Super</h2>
     
     <div class="form-group">
         <input type="text" id="producto" placeholder="Que falta? (ej: Leche)" required>
-        <input type="text" id="tienda" placeholder="En que tienda? (ej: Walmart)">
+        <input type="text" id="tienda" placeholder="En que tienda? (ej: Costo)">
         <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
-        <button class="btn-add" onclick="agregarArticulo()">Anadir</button>
+        <button class="btn-add" onclick="agregarArticulo()">Anadir Producto</button>
     </div>
 
     <table>
-        <thead>
-            <tr>
-                <th class="checkbox-cell">Check</th>
-                <th>Producto</th>
-                <th>Tienda</th>
-                <th>Cantidad</th>
-                <th class="action-cell">Quitar</th>
-            </tr>
-        </thead>
         <tbody id="cuerpoTabla"></tbody>
     </table>
 
-    <button class="btn-reset" onclick="resetearLista()">Reiniciar Lista (Borrar Todo)</button>
+    <div class="share-box" id="shareBox">
+        <span class="share-text">Lista lista para enviar</span>
+        <button class="btn-share" onclick="copiarEnlace()">Copiar Link de WhatsApp</button>
+    </div>
+
+    <button class="btn-reset" onclick="resetearLista()">Borrar Toda la Lista</button>
 </div>
 
 <script>
-    // Nueva ruta abierta sin restricciones de seguridad ni bloqueos de dominio
-    const API_URL = "https://kvbin.com";
-
     let listaSuper = [];
 
-    async function cargarListaDeNube() {
-        document.getElementById('status').style.color = "#7f8c8d";
-        document.getElementById('status').innerText = "Sincronizando con la nube...";
-        try {
-            const res = await fetch(API_URL);
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            listaSuper = data.lista || [];
-            renderizarTabla();
-            document.getElementById('status').style.color = "#2ecc71";
-            document.getElementById('status').innerText = "Lista en linea sincronizada";
-        } catch (err) {
-            document.getElementById('status').style.color = "#e74c3c";
-            document.getElementById('status').innerText = "Modo de respaldo. Reintenta recargar la pagina.";
-            listaSuper = JSON.parse(localStorage.getItem('listaSuperFallback')) || [];
-            renderizarTabla();
+    function cargarListaDeUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const datosUrl = params.get('data');
+        
+        if (datosUrl) {
+            try {
+                const textoPlano = decodeURIComponent(atob(datosUrl));
+                listaSuper = JSON.parse(textoPlano);
+            } catch (e) {
+                listaSuper = [];
+            }
+        } else {
+            listaSuper = JSON.parse(localStorage.getItem('local_super_dark')) || [];
+        }
+        renderizarTabla();
+        actualizarBotonCompartir();
+    }
+
+    function guardarEstado() {
+        localStorage.setItem('local_super_dark', JSON.stringify(listaSuper));
+        
+        if (listaSuper.length > 0) {
+            const textoCodigo = btoa(encodeURIComponent(JSON.stringify(listaSuper)));
+            const nuevoLink = window.location.origin + window.location.pathname + '?data=' + textoCodigo;
+            window.history.replaceState(null, '', nuevoLink);
+        } else {
+            window.history.replaceState(null, '', window.location.origin + window.location.pathname);
+        }
+        actualizarBotonCompartir();
+    }
+
+    function actualizarBotonCompartir() {
+        const box = document.getElementById('shareBox');
+        if (listaSuper.length > 0) {
+            box.style.display = 'block';
+        } else {
+            box.style.display = 'none';
         }
     }
 
-    async function guardarEnNube() {
-        localStorage.setItem('listaSuperFallback', JSON.stringify(listaSuper));
-        document.getElementById('status').style.color = "#7f8c8d";
-        document.getElementById('status').innerText = "Guardando cambios en la nube...";
-        try {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ lista: listaSuper })
-            });
-            if (!res.ok) throw new Error();
-            document.getElementById('status').style.color = "#2ecc71";
-            document.getElementById('status').innerText = "Cambios guardados para toda la familia";
-        } catch (err) {
-            document.getElementById('status').style.color = "#2ecc71";
-            document.getElementById('status').innerText = "Cambios guardados de forma local";
-        }
+    function copiarEnlace() {
+        navigator.clipboard.writeText(window.location.href);
+        alert("Link copiado. Pegalo en el chat de tu familia.");
     }
 
     function renderizarTabla() {
@@ -105,15 +238,21 @@
         listaSuper.forEach((articulo, index) => {
             const fila = document.createElement('tr');
             if (articulo.comprado) fila.classList.add('comprado');
+            
+            const infoTienda = articulo.tienda ? ` <span class="sub-info">(${articulo.tienda})</span>` : '';
+            
             fila.innerHTML = `
                 <td class="checkbox-cell">
                     <input type="checkbox" ${articulo.comprado ? 'checked' : ''} onclick="alternarComprado(${index})">
                 </td>
-                <td>${articulo.producto}</td>
-                <td>${articulo.tienda || '-'}</td>
-                <td>${articulo.cantidad}</td>
+                <td>
+                    ${articulo.producto}${infoTienda}
+                </td>
+                <td style="text-align: right; color: #757575; width: 40px; padding-right: 15px;">
+                    x${articulo.cantidad}
+                </td>
                 <td class="action-cell">
-                    <button class="btn-delete" onclick="eliminarArticulo(${index})">X</button>
+                    <button class="btn-delete" onclick="eliminarArticulo(${index})">Borrar</button>
                 </td>
             `;
             tabla.appendChild(fila);
@@ -135,7 +274,7 @@
         });
 
         renderizarTabla();
-        guardarEnNube();
+        guardarEstado();
 
         prodInput.value = '';
         tiendaInput.value = '';
@@ -146,24 +285,24 @@
     function alternarComprado(index) {
         listaSuper[index].comprado = !listaSuper[index].comprado;
         renderizarTabla();
-        guardarEnNube();
+        guardarEstado();
     }
 
     function eliminarArticulo(index) {
         listaSuper.splice(index, 1);
         renderizarTabla();
-        guardarEnNube();
+        guardarEstado();
     }
 
     function resetearLista() {
-        if (confirm('Borrar la lista de todos los celulares familiares?')) {
+        if (confirm('Quieres borrar todos los productos?')) {
             listaSuper = [];
             renderizarTabla();
-            guardarEnNube();
+            guardarEstado();
         }
     }
 
-    cargarListaDeNube();
+    cargarListaDeUrl();
 </script>
 </body>
 </html>
