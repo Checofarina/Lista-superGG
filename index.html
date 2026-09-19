@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista del S˙per Familiar</title>
+    <title>Lista del S√∫per Familiar</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f7f9fc; color: #333; }
         .container { max-width: 650px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h2 { text-align: center; color: #2c3e50; margin-bottom: 5px; }
-        .sync-status { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 20px; }
+        .sync-status { text-align: center; font-size: 12px; color: #7f8c8d; margin-bottom: 20px; font-weight: bold; }
         .form-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
         input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         button { padding: 10px 15px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
@@ -29,20 +29,20 @@
 <body>
 
 <div class="container">
-    <h2>?? Lista del S˙per Compartida</h2>
-    <div class="sync-status" id="status">Conectando a la nube...</div>
+    <h2>üõí Lista del S√∫per Compartida</h2>
+    <div class="sync-status" id="status">Conectando a la nube familiar...</div>
     
     <div class="form-group">
-        <input type="text" id="producto" placeholder="øQuÈ falta? (ej: Leche)" required>
-        <input type="text" id="tienda" placeholder="øEn quÈ tienda? (ej: Walmart)">
+        <input type="text" id="producto" placeholder="¬øQu√© falta? (ej: Leche)" required>
+        <input type="text" id="tienda" placeholder="¬øEn qu√© tienda? (ej: Walmart)">
         <input type="number" id="cantidad" placeholder="Cantidad" min="1" value="1">
-        <button class="btn-add" onclick="agregarArticulo()">AÒadir</button>
+        <button class="btn-add" onclick="agregarArticulo()">A√±adir</button>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th class="checkbox-cell">?</th>
+                <th class="checkbox-cell">‚úì</th>
                 <th>Producto</th>
                 <th>Tienda</th>
                 <th>Cantidad</th>
@@ -56,34 +56,37 @@
 </div>
 
 <script>
-    // Tu ID de almacenamiento p˙blico en la nube (Puedes usar este de prueba)
-    const BIN_ID = "65076cf912a5d376597f8c05"; 
-    const API_URL = `https://jsonbin.io`;
-    const MASTER_KEY = "\$2a\$10\$vNiaC7m/NskqG4r.Hof9eOszFmR.zYx9ZlH38aV06x8g6e4Y7Zz5G"; // Llave p˙blica de envÌo
+    const API_URL = "https://jsonbin.io";
+    const MASTER_KEY = "\$2a\$10\$vNiaC7m/NskqG4r.Hof9eOszFmR.zYx9ZlH38aV06x8g6e4Y7Zz5G"; 
 
     let listaSuper = [];
 
     async function cargarListaDeNube() {
-        document.getElementById('status').innerText = "?? Sincronizando con la nube...";
+        document.getElementById('status').style.color = "#7f8c8d";
+        document.getElementById('status').innerText = "üîÑ Sincronizando con la nube...";
         try {
             const res = await fetch(API_URL, {
                 method: 'GET',
                 headers: { 'X-Master-Key': MASTER_KEY }
             });
+            if (!res.ok) throw new Error("Error en respuesta de red");
             const data = await res.json();
             listaSuper = data.record.lista || [];
             renderizarTabla();
-            document.getElementById('status').innerText = "? Lista actualizada (Nube)";
+            document.getElementById('status').style.color = "#2ecc71";
+            document.getElementById('status').innerText = "‚úÖ Lista en l√≠nea sincronizada";
         } catch (err) {
-            document.getElementById('status').innerText = "? Error al conectar con internet";
+            document.getElementById('status').style.color = "#e74c3c";
+            document.getElementById('status').innerText = "‚ùå Error temporal de conexi√≥n. Reintenta recargar la p√°gina.";
             console.error(err);
         }
     }
 
     async function guardarEnNube() {
-        document.getElementById('status').innerText = "?? Guardando en la nube...";
+        document.getElementById('status').style.color = "#7f8c8d";
+        document.getElementById('status').innerText = "üíæ Guardando cambios en la nube...";
         try {
-            await fetch(API_URL, {
+            const res = await fetch(API_URL, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -91,9 +94,12 @@
                 },
                 body: JSON.stringify({ lista: listaSuper })
             });
-            document.getElementById('status').innerText = "? Cambios guardados para toda la familia";
+            if (!res.ok) throw new Error("Error al guardar");
+            document.getElementById('status').style.color = "#2ecc71";
+            document.getElementById('status').innerText = "‚úÖ Cambios guardados para toda la familia";
         } catch (err) {
-            document.getElementById('status').innerText = "? Error al guardar";
+            document.getElementById('status').style.color = "#e74c3c";
+            document.getElementById('status').innerText = "‚ùå Error al guardar datos.";
         }
     }
 
@@ -111,7 +117,7 @@
                 <td>${articulo.tienda || '-'}</td>
                 <td>${articulo.cantidad}</td>
                 <td class="action-cell">
-                    <button class="btn-delete" onclick="eliminarArticulo(${index})">?</button>
+                    <button class="btn-delete" onclick="eliminarArticulo(${index})">‚ùå</button>
                 </td>
             `;
             tabla.appendChild(fila);
@@ -154,14 +160,13 @@
     }
 
     function resetearLista() {
-        if (confirm('øBorrar la lista de todos los celulares familiares?')) {
+        if (confirm('¬øBorrar la lista de todos los celulares familiares?')) {
             listaSuper = [];
             renderizarTabla();
             guardarEnNube();
         }
     }
 
-    // Cargar los datos inmediatamente al abrir la p·gina
     cargarListaDeNube();
 </script>
 </body>
